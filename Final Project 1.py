@@ -74,6 +74,22 @@ def extract_sheets(parent_folder):
                     with zipfile.ZipFile(sheet_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(folder_path)
 
+                    # Move elements out of additional folder, if present
+                    additional_folder = sheet_name.replace('.zip', '')
+                    additional_folder_path = os.path.join(folder_path,
+                                                          additional_folder)
+
+                    if os.path.exists(additional_folder_path) and (
+                            os.path.isdir(additional_folder_path)):
+                        for item in os.listdir(additional_folder_path):
+                            item_path = os.path.join(additional_folder_path,
+                                                     item)
+                            new_item_path = os.path.join(folder_path, item)
+                            os.rename(item_path, new_item_path)
+
+                        # Remove the now empty additional folder
+                        os.rmdir(additional_folder_path)
+
                     already_extracted_path = os.path.join(
                         already_extracted_folder, sheet_name)
                     os.rename(sheet_zip_path, already_extracted_path)
