@@ -3,6 +3,7 @@ from tkinter import filedialog, messagebox
 import zipfile
 import os
 import subprocess
+import unittest
 
 
 def extract_sheets(parent_folder):
@@ -203,6 +204,75 @@ def username(folder_path):
         os.rename(
             username_script_path,
             os.path.join(folder_path, "Unsuccessful Sheets", "username.py"))
+
+
+def project(folder_path):
+    project_zip_path = os.path.join(folder_path, 'project.zip')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+    code_folder = os.path.join(folder_path, 'code')
+    test_file = os.path.join(folder_path, 'test.py')
+    project_folder = os.path.join(folder_path, 'project')
+
+    with zipfile.ZipFile(project_zip_path, 'r') as zip_ref:
+        zip_ref.extractall(folder_path)
+
+    if os.path.exists(code_folder) and os.path.exists(test_file):
+        os.makedirs(project_folder, exist_ok=True)
+
+        os.rename(code_folder, os.path.join(project_folder, 'code'))
+        os.rename(test_file, os.path.join(project_folder, 'test.py'))
+
+        code_folder = os.path.join(project_folder, 'code')
+        test_file = os.path.join(project_folder, 'test.py')
+
+    else:
+        code_folder = os.path.join(project_folder, 'code')
+        test_file = os.path.join(project_folder, 'test.py')
+
+    loader = unittest.TestLoader()
+    suite = loader.loadTestsFromName(test_file)
+    num_tests = suite.countTestCases()
+
+    try:
+        with open(test_file, 'r') as file:
+            has_required_imports = any(line.strip().startswith(
+                'import code.caesercipher') or line.strip().startswith(
+                    'import code.caesarcipher') or line.strip().startswith(
+                        'from code.caesercipher import') or
+                    line.strip().startswith(
+                        'from code.caesarcipher import') for line in file)
+
+    except FileNotFoundError:
+        has_required_imports = False
+
+    with open(os.devnull, 'w') as null_stream:
+        result = unittest.TextTestRunner(stream=null_stream).run(suite)
+    all_tests_passed = result.wasSuccessful()
+
+    if all_tests_passed and has_required_imports and (num_tests > 2):
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 10
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 03 Task 01 project.zip: +10 Points\n")
+
+        os.rename(project_folder, os.path.join(
+            folder_path, "Successful Sheets", "project"))
+
+    else:
+        os.rename(project_folder, os.path.join(
+            folder_path, "Unsuccessful Sheets", "project"))
 
 
 def crosssum(folder_path):
