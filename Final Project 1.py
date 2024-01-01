@@ -4,6 +4,8 @@ import zipfile
 import os
 import subprocess
 import unittest
+import ast
+from importlib.machinery import SourceFileLoader
 
 
 def extract_sheets(parent_folder):
@@ -115,6 +117,7 @@ def extract_sheets(parent_folder):
             leapyear(folder_path)
             million(folder_path)
             caesar_cipher(folder_path)
+            books(folder_path)
 
 
 def select_parent_folder():
@@ -468,6 +471,199 @@ def caesar_cipher(folder_path):
     else:
         os.rename(caesar_cipher_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "caesar_cipher.py"))
+
+
+def books(folder_path):
+    file_path = os.path.join(folder_path, 'books.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+
+    books_module = SourceFileLoader('books', file_path).load_module()
+
+    try:
+        from books import Book, ChildrenBook, buy_books  # noqa: F401
+    except ImportError:
+        pass
+
+    classes = []
+    class_methods = {}
+    class_attributes = {}
+    functions = []
+    function_variables = {}
+    first_criteria_satisfied = False
+    second_criteria_satisfied = True
+
+    def extract_info(node, current_class=None):
+        if isinstance(node, ast.ClassDef):
+            current_class = node.name
+            classes.append(current_class)
+            class_methods[current_class] = []
+            class_attributes[current_class] = []
+            for item in node.body:
+                extract_info(item, current_class)
+        elif isinstance(node, ast.FunctionDef):
+            method_name = node.name
+            if current_class:
+                class_methods[current_class].append(method_name)
+                for arg in node.args.args:
+                    class_attributes[current_class].append(
+                        f"{current_class}.{arg.arg}"
+                    )
+                for item in node.body:
+                    extract_info(item, current_class)
+            else:
+                functions.append(method_name)
+                function_variables[method_name] = []
+                for item in node.body:
+                    if isinstance(item, ast.Assign):
+                        for target in item.targets:
+                            if isinstance(target, ast.Name):
+                                function_variables[method_name].append(
+                                    target.id)
+                    else:
+                        extract_info(item)
+        elif isinstance(node, ast.Assign):
+            if current_class:
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        variable_name = target.id
+                        class_attributes[current_class].append(
+                            f"{current_class}.{variable_name}"
+                        )
+
+        elif (
+                isinstance(node, ast.Expr)
+                and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+        ):
+            function_name = node.value.func.id
+            if current_class:
+                class_methods[current_class].append(function_name)
+        else:
+            for item in ast.iter_child_nodes(node):
+                extract_info(item, current_class)
+
+    with open(file_path, 'r') as file:
+        content = file.read()
+        tree = ast.parse(content)
+
+        for node in tree.body:
+            extract_info(node)
+
+    variable_classes = {}
+
+    with open(file_path, 'r') as file:
+        tree = ast.parse(file.read(), filename=file_path)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    variable_name = target.id
+                    if isinstance(node.value, ast.Call):
+                        value = ast.unparse(node.value)
+                    else:
+                        try:
+                            value = ast.literal_eval(node.value)
+                        except (ValueError, SyntaxError):
+                            value = None
+                    variable_classes[variable_name] = value
+
+    variable_function_names = {}
+
+    for variable_name, value in variable_classes.items():
+        if isinstance(value, str) and value.startswith(
+            ("Book(", "ChildrenBook(")
+        ):
+            class_name = value.split('(', 1)[0]
+            variable_function_names[variable_name] = class_name
+        else:
+            variable_function_names[variable_name] = None
+
+    book_count = 0
+    childrenbook_count = 0
+    for value in variable_function_names.values():
+        if value == "Book":
+            book_count += 1
+        if value == "ChildrenBook":
+            childrenbook_count += 1
+
+    if (
+        "Book" in classes
+        and "ChildrenBook" in classes
+        and "view" in class_methods["Book"]
+        and "view" in class_methods["ChildrenBook"]
+        and any(
+            attr.lower() == "book.title" for attr in class_attributes["Book"])
+        and any(
+            attr.lower() == "book.author" for attr in class_attributes["Book"])
+        and any(
+            attr.lower() == "book.price" for attr in class_attributes["Book"])
+        and "buy_books" in functions
+        and book_count >= 3
+        and childrenbook_count >= 2
+    ):
+        first_criteria_satisfied = True
+    else:
+        print("First Criteria Not Satisfied")
+
+    for variable in variable_classes:
+        exec(f"{variable} = {variable_classes[variable]}")
+
+    actual_sum = 0
+    parameter_list = []
+    for name in variable_function_names:
+        var = locals()[name]
+        if not (variable_function_names[name]):
+            pass
+        elif (
+            (variable_function_names[name].lower() == "book")
+            and (("Title" and "Author" and "Price") in var.view())
+        ):
+            pass
+        elif (
+            (variable_function_names[name].lower() == "childrenbook")
+            and ("children's book" in var.view())
+        ):
+            pass
+        else:
+            second_criteria_satisfied = False
+
+        if (
+            variable_function_names[name]
+            and (variable_function_names[name].lower() == "book")
+        ):
+            actual_sum += var.price
+            parameter_list.append(name)
+
+    if actual_sum == buy_books(*[locals()[param] for param in parameter_list]):
+        pass
+    else:
+        second_criteria_satisfied = False
+
+    if first_criteria_satisfied and second_criteria_satisfied:
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 4
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 03 Task 03 books.py: +4 Points\n")
+
+        os.rename(file_path, os.path.join(
+            folder_path, "Successful Sheets", "books.py"))
+    else:
+        os.rename(
+            file_path,
+            os.path.join(folder_path, "Unsuccessful Sheets", "books.py"))
 
 
 def main():
