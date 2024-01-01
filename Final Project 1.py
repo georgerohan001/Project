@@ -489,8 +489,7 @@ def books(folder_path):
     class_attributes = {}
     functions = []
     function_variables = {}
-    first_criteria_satisfied = False
-    second_criteria_satisfied = True
+    exercise_sheet_passed = True
 
     def extract_info(node, current_class=None):
         if isinstance(node, ast.ClassDef):
@@ -602,9 +601,9 @@ def books(folder_path):
         and book_count >= 3
         and childrenbook_count >= 2
     ):
-        first_criteria_satisfied = True
+        pass
     else:
-        print("First Criteria Not Satisfied")
+        exercise_sheet_passed = False
 
     for variable in variable_classes:
         exec(f"{variable} = {variable_classes[variable]}")
@@ -626,7 +625,7 @@ def books(folder_path):
         ):
             pass
         else:
-            second_criteria_satisfied = False
+            exercise_sheet_passed = False
 
         if (
             variable_function_names[name]
@@ -638,9 +637,9 @@ def books(folder_path):
     if actual_sum == buy_books(*[locals()[param] for param in parameter_list]):
         pass
     else:
-        second_criteria_satisfied = False
+        exercise_sheet_passed = False
 
-    if first_criteria_satisfied and second_criteria_satisfied:
+    if exercise_sheet_passed:
         with open(points_log_path, 'r') as points_log_file:
             existing_content = points_log_file.read()
 
