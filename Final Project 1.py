@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import zipfile
 import os
+import shutil
 import subprocess
 import unittest
 import ast
@@ -118,6 +119,19 @@ def extract_sheets(parent_folder):
             million(folder_path)
             caesar_cipher(folder_path)
             books(folder_path)
+            anagrams(folder_path)
+            data(folder_path)
+            zen(folder_path)
+            shapes(folder_path)
+
+            folders_to_delete = ["__MACOSX", "__pycache__"]
+            for folder_name in folders_to_delete:
+                folder_to_delete_path = os.path.join(folder_path, folder_name)
+                if (
+                    os.path.exists(folder_to_delete_path)
+                    and os.path.isdir(folder_to_delete_path)
+                ):
+                    shutil.rmtree(folder_to_delete_path)
 
 
 def select_parent_folder():
@@ -135,42 +149,30 @@ def helloworld(folder_path):
             if line.count('print') > 0:
                 count_plus_equals += line.count("+") + line.count("=")
 
-    try:
-        result = subprocess.check_output(
-            ['python', helloworld_script_path], universal_newlines=True
-        )
-
-        expected_output = f"{25*'='}\n\nH+e+l+l+o W+o+r+l+d !!!\n\n{25*'='}"
-
-        if (
-            result.strip() == expected_output.strip()) and (
-                count_plus_equals <= 4):
-
-            with open(points_log_path, 'r') as points_log_file:
-                existing_content = points_log_file.read()
-
-            previous_balance = int(
-                existing_content.split("Point balance: ")[1].split("\n")[0])
-
-            updated_point_balance = previous_balance + 6
-            updated_content = existing_content.replace(
-                f"Point balance: {previous_balance}",
-                f"Point balance: {updated_point_balance}")
-
-            with open(points_log_path, 'w') as points_log:
-                points_log.write(updated_content)
-
-            with open(points_log_path, 'a') as points_log:
-                points_log.write("Sheet 01 Task 02 helloworld.py: +6 Points\n")
-
-            os.rename(helloworld_script_path, os.path.join(
-                folder_path, "Successful Sheets", "helloworld.py"))
-        else:
-            os.rename(helloworld_script_path, os.path.join(
-                folder_path, "Unsuccessful Sheets", "helloworld.py"))
-
-    except subprocess.CalledProcessError as e:
-        print("Error: ", e.output)
+    result = subprocess.check_output(
+        ['python', helloworld_script_path], universal_newlines=True
+    )
+    expected_output = f"{25*'='}\n\nH+e+l+l+o W+o+r+l+d !!!\n\n{25*'='}"
+    if (
+        result.strip() == expected_output.strip()) and (
+            count_plus_equals <= 4):
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+        previous_balance = int(
+            existing_content.split("Point balance: ")[1].split("\n")[0])
+        updated_point_balance = previous_balance + 6
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 01 Task 02 helloworld.py: +6 Points\n")
+        os.rename(helloworld_script_path, os.path.join(
+            folder_path, "Successful Sheets", "helloworld.py"))
+    elif os.path.exists(helloworld_script_path):
+        os.rename(helloworld_script_path, os.path.join(
+            folder_path, "Unsuccessful Sheets", "helloworld.py"))
 
 
 def username(folder_path):
@@ -203,7 +205,8 @@ def username(folder_path):
 
         os.rename(username_script_path, os.path.join(
             folder_path, "Successful Sheets", "username.py"))
-    else:
+
+    elif os.path.exists(username_script_path):
         os.rename(
             username_script_path,
             os.path.join(folder_path, "Unsuccessful Sheets", "username.py"))
@@ -273,7 +276,7 @@ def project(folder_path):
         os.rename(project_folder, os.path.join(
             folder_path, "Successful Sheets", "project"))
 
-    else:
+    elif os.path.exists(project_folder):
         os.rename(project_folder, os.path.join(
             folder_path, "Unsuccessful Sheets", "project"))
 
@@ -307,7 +310,7 @@ def crosssum(folder_path):
 
         os.rename(crosssum_script_path, os.path.join(
             folder_path, "Successful Sheets", "crosssum.py"))
-    else:
+    elif os.path.exists(crosssum_script_path):
         os.rename(crosssum_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "crosssum.py"))
 
@@ -346,7 +349,7 @@ def lifeinweeks(folder_path):
 
         os.rename(lifeinweeks_script_path, os.path.join(
             folder_path, "Successful Sheets", "lifeinweeks.py"))
-    else:
+    elif os.path.exists(lifeinweeks_script_path):
         os.rename(lifeinweeks_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "lifeinweeks.py"))
 
@@ -403,7 +406,7 @@ def leapyear(folder_path):
 
         os.rename(leapyear_script_path, os.path.join(
             folder_path, "Successful Sheets", "leapyear.py"))
-    else:
+    elif os.path.exists(leapyear_script_path):
         os.rename(leapyear_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "leapyear.py"))
 
@@ -434,7 +437,7 @@ def million(folder_path):
 
         os.rename(million_script_path, os.path.join(
             folder_path, "Successful Sheets", "million.py"))
-    else:
+    elif os.path.exists(million_script_path):
         os.rename(million_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "million.py"))
 
@@ -468,16 +471,16 @@ def caesar_cipher(folder_path):
 
         os.rename(caesar_cipher_script_path, os.path.join(
             folder_path, "Successful Sheets", "caesar_cipher.py"))
-    else:
+    elif os.path.exists(caesar_cipher_script_path):
         os.rename(caesar_cipher_script_path, os.path.join(
             folder_path, "Unsuccessful Sheets", "caesar_cipher.py"))
 
 
 def books(folder_path):
-    file_path = os.path.join(folder_path, 'books.py')
+    books_script_path = os.path.join(folder_path, 'books.py')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
-    books_module = SourceFileLoader('books', file_path).load_module()
+    books_module = SourceFileLoader('books', books_script_path).load_module()
 
     try:
         from books import Book, ChildrenBook, buy_books  # noqa: F401
@@ -541,7 +544,7 @@ def books(folder_path):
             for item in ast.iter_child_nodes(node):
                 extract_info(item, current_class)
 
-    with open(file_path, 'r') as file:
+    with open(books_script_path, 'r') as file:
         content = file.read()
         tree = ast.parse(content)
 
@@ -550,8 +553,8 @@ def books(folder_path):
 
     variable_classes = {}
 
-    with open(file_path, 'r') as file:
-        tree = ast.parse(file.read(), filename=file_path)
+    with open(books_script_path, 'r') as file:
+        tree = ast.parse(file.read(), filename=books_script_path)
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
@@ -657,12 +660,201 @@ def books(folder_path):
         with open(points_log_path, 'a') as points_log:
             points_log.write("Sheet 03 Task 03 books.py: +4 Points\n")
 
-        os.rename(file_path, os.path.join(
+        os.rename(books_script_path, os.path.join(
             folder_path, "Successful Sheets", "books.py"))
-    else:
+    elif os.path.exists(books_script_path):
         os.rename(
-            file_path,
+            books_script_path,
             os.path.join(folder_path, "Unsuccessful Sheets", "books.py"))
+
+
+def anagrams(folder_path):
+    anagrams_script_path = os.path.join(folder_path, 'anagrams.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+
+    result = subprocess.run(
+        ["python", anagrams_script_path],
+        capture_output=True, text=True,
+        input="conversationalist\nconversationalist\n",
+        check=True
+        )
+
+    conditions_met = True
+
+    output = result.stdout.lower()
+
+    if "anagram" in output and " not " not in output:
+        pass
+    else:
+        conditions_met = False
+
+    with open(anagrams_script_path, 'r') as file:
+        code = file.read()
+
+    try:
+        parsed_code = ast.parse(code)
+    except SyntaxError:
+        pass
+
+    dict_count = sum(
+        isinstance(node, ast.Dict) for node in ast.walk(parsed_code)
+        )
+
+    if dict_count >= 1:
+        pass
+    else:
+        conditions_met = False
+
+    if conditions_met:
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 3
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 03 Task 04 anagrams.py: +3 Points\n")
+
+        os.rename(anagrams_script_path, os.path.join(
+            folder_path, "Successful Sheets", "anagrams.py"))
+    elif os.path.exists(anagrams_script_path):
+        os.rename(anagrams_script_path, os.path.join(
+            folder_path, "Unsuccessful Sheets", "anagrams.py"))
+
+
+def data(folder_path):
+    data_csv_path = os.path.join(folder_path, 'data.csv')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+
+    if os.path.exists(data_csv_path):
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 5
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 04 Task 01 data.csv: +5 Points\n")
+
+
+def zen(folder_path):
+    zen_script_path = os.path.join(folder_path, 'zen.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+    zen_imported = False
+
+    with open(zen_script_path, 'r') as file:
+        for line in file:
+            if "import this" in line:
+                zen_imported = True
+
+    if zen_imported:
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 2
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 04 Task 03 zen.py: +2 Points\n")
+
+        os.rename(zen_script_path, os.path.join(
+            folder_path, "Successful Sheets", "zen.py"))
+
+    elif os.path.exists(zen_script_path):
+        os.rename(zen_script_path, os.path.join(
+            folder_path, "Unsuccessful Sheets", "zen.py"))
+
+
+def shapes(folder_path):
+    shapes_script_path = os.path.join(folder_path, 'shapes.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+    modules_worked = True
+
+    # Dynamically import the classes outside the loop
+    shapes_module = (
+        SourceFileLoader('shapes', shapes_script_path).load_module()
+        )
+    try:
+        from shapes import Shape, Circle, Rectangle
+    except ImportError:
+        modules_worked = False
+        print("one")
+
+    # Instantiate the classes outside the loop
+    try:
+        shp = Shape(3)
+        crcl = Circle(5)
+        rct = Rectangle(3, 5)
+    except TypeError:
+        modules_worked = False
+
+    try:
+        bool(shp.area())
+    except UnboundLocalError:
+        modules_worked = False
+    except TypeError:
+        modules_worked = False
+
+    if (
+        modules_worked and
+        hasattr(shapes_module, 'Shape') and
+        hasattr(shapes_module, 'Circle') and
+        hasattr(shapes_module, 'Rectangle') and
+        issubclass(Circle, Shape) and
+        issubclass(Rectangle, Shape) and
+        (shp.area() and shp.perimeter()) and
+        (78 <= float(crcl.area()) <= 79) and
+        (31 <= float(crcl.perimeter()) <= 32) and
+        (int(rct.area()) == 15) and
+        (int(rct.perimeter()) == 16)
+    ):
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+
+        previous_balance = int(existing_content.split(
+            "Point balance: ")[1].split("\n")[0])
+
+        updated_point_balance = previous_balance + 6
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+
+        with open(points_log_path, 'a') as points_log:
+            points_log.write("Sheet 04 Task 04 shapes.py: +6 Points\n")
+
+        os.rename(shapes_script_path, os.path.join(
+            folder_path, "Successful Sheets", "shapes.py"))
+    elif os.path.exists(shapes_script_path):
+        os.rename(
+            shapes_script_path,
+            os.path.join(folder_path, "Unsuccessful Sheets", "shapes.py"))
 
 
 def main():
