@@ -4,7 +4,6 @@ import zipfile
 import os
 import shutil
 import subprocess
-import unittest
 import ast
 from importlib.machinery import SourceFileLoader
 
@@ -139,6 +138,32 @@ def select_parent_folder():
     return parent_folder
 
 
+def sheet_mover(
+    statement, points_log_path, script_path,
+    folder_path, name, ex, task, points
+):
+    if statement:
+        with open(points_log_path, 'r') as points_log_file:
+            existing_content = points_log_file.read()
+        previous_balance = int(
+            existing_content.split("Point balance: ")[1].split("\n")[0])
+        updated_point_balance = previous_balance + points
+        updated_content = existing_content.replace(
+            f"Point balance: {previous_balance}",
+            f"Point balance: {updated_point_balance}")
+        with open(points_log_path, 'w') as points_log:
+            points_log.write(updated_content)
+        with open(points_log_path, 'a') as points_log:
+            points_log.write(
+                f"Sheet {ex} Task {task} {name}: +{points} Points\n"
+                )
+        os.rename(script_path, os.path.join(
+            folder_path, "Successful Sheets", name))
+    elif os.path.exists(script_path):
+        os.rename(script_path, os.path.join(
+            folder_path, "Unsuccessful Sheets", name))
+
+
 def helloworld(folder_path):
     helloworld_script_path = os.path.join(folder_path, 'helloworld.py')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
@@ -153,26 +178,13 @@ def helloworld(folder_path):
         ['python', helloworld_script_path], universal_newlines=True
     )
     expected_output = f"{25*'='}\n\nH+e+l+l+o W+o+r+l+d !!!\n\n{25*'='}"
-    if (
-        result.strip() == expected_output.strip()) and (
-            count_plus_equals <= 4):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-        previous_balance = int(
-            existing_content.split("Point balance: ")[1].split("\n")[0])
-        updated_point_balance = previous_balance + 6
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 01 Task 02 helloworld.py: +6 Points\n")
-        os.rename(helloworld_script_path, os.path.join(
-            folder_path, "Successful Sheets", "helloworld.py"))
-    elif os.path.exists(helloworld_script_path):
-        os.rename(helloworld_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "helloworld.py"))
+    statement = ((result.strip() == expected_output.strip()) and
+                 (count_plus_equals <= 4)
+                 )
+
+    sheet_mover(statement, points_log_path, helloworld_script_path,
+                folder_path, "helloworld.py", "01", "02", 6
+                )
 
 
 def username(folder_path):
@@ -185,100 +197,11 @@ def username(folder_path):
 
     output, _ = process.communicate(input='Barthelomew')
 
-    if '11' in output:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = ('11' in output)
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 2
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 01 Task 03 username.py: +2 Points\n")
-
-        os.rename(username_script_path, os.path.join(
-            folder_path, "Successful Sheets", "username.py"))
-
-    elif os.path.exists(username_script_path):
-        os.rename(
-            username_script_path,
-            os.path.join(folder_path, "Unsuccessful Sheets", "username.py"))
-
-
-def project(folder_path):
-    project_zip_path = os.path.join(folder_path, 'project.zip')
-    points_log_path = os.path.join(folder_path, "Points_Log.txt")
-    code_folder = os.path.join(folder_path, 'code')
-    test_file = os.path.join(folder_path, 'test.py')
-    project_folder = os.path.join(folder_path, 'project')
-
-    with zipfile.ZipFile(project_zip_path, 'r') as zip_ref:
-        zip_ref.extractall(folder_path)
-
-    if os.path.exists(code_folder) and os.path.exists(test_file):
-        os.makedirs(project_folder, exist_ok=True)
-
-        os.rename(code_folder, os.path.join(project_folder, 'code'))
-        os.rename(test_file, os.path.join(project_folder, 'test.py'))
-
-        code_folder = os.path.join(project_folder, 'code')
-        test_file = os.path.join(project_folder, 'test.py')
-
-    else:
-        code_folder = os.path.join(project_folder, 'code')
-        test_file = os.path.join(project_folder, 'test.py')
-
-    loader = unittest.TestLoader()
-    suite = loader.loadTestsFromName(test_file)
-    num_tests = suite.countTestCases()
-
-    try:
-        with open(test_file, 'r') as file:
-            has_required_imports = any(line.strip().startswith(
-                'import code.caesercipher') or line.strip().startswith(
-                    'import code.caesarcipher') or line.strip().startswith(
-                        'from code.caesercipher import') or
-                    line.strip().startswith(
-                        'from code.caesarcipher import') for line in file)
-
-    except FileNotFoundError:
-        has_required_imports = False
-
-    with open(os.devnull, 'w') as null_stream:
-        result = unittest.TextTestRunner(stream=null_stream).run(suite)
-    all_tests_passed = result.wasSuccessful()
-
-    if all_tests_passed and has_required_imports and (num_tests > 2):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 10
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 03 Task 01 project.zip: +10 Points\n")
-
-        os.rename(project_folder, os.path.join(
-            folder_path, "Successful Sheets", "project"))
-
-    elif os.path.exists(project_folder):
-        os.rename(project_folder, os.path.join(
-            folder_path, "Unsuccessful Sheets", "project"))
+    sheet_mover(statement, points_log_path, username_script_path,
+                folder_path, "username.py", "01", "03", 2
+                )
 
 
 def crosssum(folder_path):
@@ -290,29 +213,11 @@ def crosssum(folder_path):
                                stdout=subprocess.PIPE, text=True)
     output, _ = process.communicate(input='99')
 
-    if '18' in output:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = ('18' in output)
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 2
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 01 Task 04 crosssum.py: +2 Points\n")
-
-        os.rename(crosssum_script_path, os.path.join(
-            folder_path, "Successful Sheets", "crosssum.py"))
-    elif os.path.exists(crosssum_script_path):
-        os.rename(crosssum_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "crosssum.py"))
+    sheet_mover(statement, points_log_path, crosssum_script_path,
+                folder_path, "crosssum.py", "01", "04", 2
+                )
 
 
 def lifeinweeks(folder_path):
@@ -325,33 +230,13 @@ def lifeinweeks(folder_path):
 
     output, _ = process.communicate(input='56')
 
-    if (
-        '12410 day' in output) and (
-            '1768 week' in output) and (
-                '408 month' in output):
+    statement = ('12410 day' in output and
+                 '1768 week' in output and
+                 '408 month' in output)
 
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 5
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 01 Task 05 lifeinweeks.py: +5 Points\n")
-
-        os.rename(lifeinweeks_script_path, os.path.join(
-            folder_path, "Successful Sheets", "lifeinweeks.py"))
-    elif os.path.exists(lifeinweeks_script_path):
-        os.rename(lifeinweeks_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "lifeinweeks.py"))
+    sheet_mover(statement, points_log_path, lifeinweeks_script_path,
+                folder_path, "lifeinweeks.py", "01", "05", 5
+                )
 
 
 def leapyear(folder_path):
@@ -386,29 +271,11 @@ def leapyear(folder_path):
 
             successful_tests += 1
 
-    if successful_tests == 4:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = (successful_tests == 4)
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 4
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 02 Task 02 leapyear.py: +4 Points\n")
-
-        os.rename(leapyear_script_path, os.path.join(
-            folder_path, "Successful Sheets", "leapyear.py"))
-    elif os.path.exists(leapyear_script_path):
-        os.rename(leapyear_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "leapyear.py"))
+    sheet_mover(statement, points_log_path, leapyear_script_path,
+                folder_path, "leapyear.py", "02", "02", 4
+                )
 
 
 def million(folder_path):
@@ -417,29 +284,13 @@ def million(folder_path):
     result = subprocess.check_output(
         ['python', million_script_path], universal_newlines=True)
 
-    if ("1" in result) and ("1000000" in result) and "500000500000" in result:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = ("1" in result and
+                 "1000000" in result and
+                 "500000500000" in result)
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 2
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 02 Task 03 million.py: +2 Points\n")
-
-        os.rename(million_script_path, os.path.join(
-            folder_path, "Successful Sheets", "million.py"))
-    elif os.path.exists(million_script_path):
-        os.rename(million_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "million.py"))
+    sheet_mover(statement, points_log_path, million_script_path,
+                folder_path, "million.py", "02", "03", 2
+                )
 
 
 def caesar_cipher(folder_path):
@@ -451,29 +302,11 @@ def caesar_cipher(folder_path):
     result2 = subprocess.run(["python", caesar_cipher_script_path],
                              input="ZyzY\n5", text=True, capture_output=True)
 
-    if ("EdeD" in result1.stdout) or ("EdeD" in result2.stdout):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = (("EdeD" in result1.stdout) or ("EdeD" in result2.stdout))
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 9
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 02 Task 04 caesar_cipher.py: +9 Points\n")
-
-        os.rename(caesar_cipher_script_path, os.path.join(
-            folder_path, "Successful Sheets", "caesar_cipher.py"))
-    elif os.path.exists(caesar_cipher_script_path):
-        os.rename(caesar_cipher_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "caesar_cipher.py"))
+    sheet_mover(statement, points_log_path, caesar_cipher_script_path,
+                folder_path, "caesar_cipher.py", "02", "04", 9
+                )
 
 
 def books(folder_path):
@@ -642,30 +475,9 @@ def books(folder_path):
     else:
         exercise_sheet_passed = False
 
-    if exercise_sheet_passed:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 4
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 03 Task 03 books.py: +4 Points\n")
-
-        os.rename(books_script_path, os.path.join(
-            folder_path, "Successful Sheets", "books.py"))
-    elif os.path.exists(books_script_path):
-        os.rename(
-            books_script_path,
-            os.path.join(folder_path, "Unsuccessful Sheets", "books.py"))
+    sheet_mover(exercise_sheet_passed, points_log_path, books_script_path,
+                folder_path, "books.py", "03", "03", 4
+                )
 
 
 def anagrams(folder_path):
@@ -705,52 +517,20 @@ def anagrams(folder_path):
     else:
         conditions_met = False
 
-    if conditions_met:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 3
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 03 Task 04 anagrams.py: +3 Points\n")
-
-        os.rename(anagrams_script_path, os.path.join(
-            folder_path, "Successful Sheets", "anagrams.py"))
-    elif os.path.exists(anagrams_script_path):
-        os.rename(anagrams_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "anagrams.py"))
+    sheet_mover(conditions_met, points_log_path, anagrams_script_path,
+                folder_path, "anagrams.py", "03", "04", 3
+                )
 
 
 def data(folder_path):
     data_csv_path = os.path.join(folder_path, 'data.csv')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
-    if os.path.exists(data_csv_path):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    statement = (os.path.exists(data_csv_path))
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 5
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 04 Task 01 data.csv: +5 Points\n")
+    sheet_mover(statement, points_log_path, data_csv_path,
+                folder_path, "data.csv", "04", "01", 5
+                )
 
 
 def zen(folder_path):
@@ -763,30 +543,9 @@ def zen(folder_path):
             if "import this" in line:
                 zen_imported = True
 
-    if zen_imported:
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 2
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 04 Task 03 zen.py: +2 Points\n")
-
-        os.rename(zen_script_path, os.path.join(
-            folder_path, "Successful Sheets", "zen.py"))
-
-    elif os.path.exists(zen_script_path):
-        os.rename(zen_script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", "zen.py"))
+    sheet_mover(zen_imported, points_log_path, zen_script_path,
+                folder_path, "zen.py", "04", "03", 2
+                )
 
 
 def shapes(folder_path):
@@ -819,7 +578,7 @@ def shapes(folder_path):
     except TypeError:
         modules_worked = False
 
-    if (
+    statement = (
         modules_worked and
         hasattr(shapes_module, 'Shape') and
         hasattr(shapes_module, 'Circle') and
@@ -831,30 +590,11 @@ def shapes(folder_path):
         (31 <= float(crcl.perimeter()) <= 32) and
         (int(rct.area()) == 15) and
         (int(rct.perimeter()) == 16)
-    ):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
+    )
 
-        previous_balance = int(existing_content.split(
-            "Point balance: ")[1].split("\n")[0])
-
-        updated_point_balance = previous_balance + 6
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-
-        with open(points_log_path, 'a') as points_log:
-            points_log.write("Sheet 04 Task 04 shapes.py: +6 Points\n")
-
-        os.rename(shapes_script_path, os.path.join(
-            folder_path, "Successful Sheets", "shapes.py"))
-    elif os.path.exists(shapes_script_path):
-        os.rename(
-            shapes_script_path,
-            os.path.join(folder_path, "Unsuccessful Sheets", "shapes.py"))
+    sheet_mover(statement, points_log_path, shapes_script_path,
+                folder_path, "shapes.py", "04", "04", 6
+                )
 
 
 def main():
