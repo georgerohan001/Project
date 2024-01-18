@@ -17,7 +17,7 @@ def extract_sheets(parent_folder):
             alr_ext = "Already Extracted Sheets"
             txt_files = "TXT Files"
             success_folder = "Successful Sheets"
-            unsuccess_folder = "Unsuccessful Sheets"
+            manual_folder = "Manual Correction Needed"
             unrecognized = "Unrecognized Sheets"
 
             already_extracted_folder = os.path.join(folder_path, alr_ext)
@@ -29,8 +29,8 @@ def extract_sheets(parent_folder):
             successful_sheets = os.path.join(folder_path, success_folder)
             os.makedirs(successful_sheets, exist_ok=True)
 
-            unsuccessful_sheets = os.path.join(folder_path, unsuccess_folder)
-            os.makedirs(unsuccessful_sheets, exist_ok=True)
+            manual_sheets = os.path.join(folder_path, manual_folder)
+            os.makedirs(manual_sheets, exist_ok=True)
 
             unrecognized_sheets = os.path.join(folder_path, unrecognized)
             os.makedirs(unrecognized_sheets, exist_ok=True)
@@ -162,7 +162,7 @@ def sheet_mover(
             folder_path, "Successful Sheets", name))
     elif os.path.exists(script_path):
         os.rename(script_path, os.path.join(
-            folder_path, "Unsuccessful Sheets", name))
+            folder_path, "Manual Correction Needed", name))
 
 
 def helloworld(folder_path):
