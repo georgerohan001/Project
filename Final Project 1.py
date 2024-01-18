@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import ast
+import inspect
 from importlib.machinery import SourceFileLoader
 
 
@@ -320,69 +321,7 @@ def books(folder_path):
     except ImportError:
         pass
 
-    classes = []
-    class_methods = {}
-    class_attributes = {}
-    functions = []
-    function_variables = {}
     exercise_sheet_passed = True
-
-    def extract_info(node, current_class=None):
-        if isinstance(node, ast.ClassDef):
-            current_class = node.name
-            classes.append(current_class)
-            class_methods[current_class] = []
-            class_attributes[current_class] = []
-            for item in node.body:
-                extract_info(item, current_class)
-        elif isinstance(node, ast.FunctionDef):
-            method_name = node.name
-            if current_class:
-                class_methods[current_class].append(method_name)
-                for arg in node.args.args:
-                    class_attributes[current_class].append(
-                        f"{current_class}.{arg.arg}"
-                    )
-                for item in node.body:
-                    extract_info(item, current_class)
-            else:
-                functions.append(method_name)
-                function_variables[method_name] = []
-                for item in node.body:
-                    if isinstance(item, ast.Assign):
-                        for target in item.targets:
-                            if isinstance(target, ast.Name):
-                                function_variables[method_name].append(
-                                    target.id)
-                    else:
-                        extract_info(item)
-        elif isinstance(node, ast.Assign):
-            if current_class:
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        variable_name = target.id
-                        class_attributes[current_class].append(
-                            f"{current_class}.{variable_name}"
-                        )
-
-        elif (
-                isinstance(node, ast.Expr)
-                and isinstance(node.value, ast.Call)
-                and isinstance(node.value.func, ast.Name)
-        ):
-            function_name = node.value.func.id
-            if current_class:
-                class_methods[current_class].append(function_name)
-        else:
-            for item in ast.iter_child_nodes(node):
-                extract_info(item, current_class)
-
-    with open(books_script_path, 'r') as file:
-        content = file.read()
-        tree = ast.parse(content)
-
-        for node in tree.body:
-            extract_info(node)
 
     variable_classes = {}
 
@@ -422,18 +361,29 @@ def books(folder_path):
         if value == "ChildrenBook":
             childrenbook_count += 1
 
+    book_class = getattr(books_module, 'Book', None)
+
+    book_class = getattr(books_module, 'Book', None)
+
+    if book_class:
+        signature = inspect.signature(book_class.__init__)
+
+        required_attributes = ['title', 'author', 'price']
+        present_attributes = all(
+            param in signature.parameters for param in required_attributes)
+
+        if present_attributes:
+            pass
+        else:
+            exercise_sheet_passed = False
+
     if (
-        "Book" in classes
-        and "ChildrenBook" in classes
-        and "view" in class_methods["Book"]
-        and "view" in class_methods["ChildrenBook"]
-        and any(
-            attr.lower() == "book.title" for attr in class_attributes["Book"])
-        and any(
-            attr.lower() == "book.author" for attr in class_attributes["Book"])
-        and any(
-            attr.lower() == "book.price" for attr in class_attributes["Book"])
-        and "buy_books" in functions
+        hasattr(books_module, 'Book')
+        and hasattr(books_module, 'ChildrenBook')
+        and hasattr(Book, 'view') and callable(getattr(Book, 'view'))
+        and (hasattr(ChildrenBook, 'view') and
+             callable(getattr(ChildrenBook, 'view')))
+        and hasattr(books_module, 'buy_books')
         and book_count >= 3
         and childrenbook_count >= 2
     ):
@@ -447,7 +397,7 @@ def books(folder_path):
     actual_sum = 0
     parameter_list = []
     for name in variable_function_names:
-        var = locals()[name]
+        var = locals()[f"{name}"]
         if not (variable_function_names[name]):
             pass
         elif (
@@ -561,7 +511,6 @@ def shapes(folder_path):
         from shapes import Shape, Circle, Rectangle
     except ImportError:
         modules_worked = False
-        print("one")
 
     # Instantiate the classes outside the loop
     try:
