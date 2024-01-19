@@ -123,6 +123,7 @@ def extract_sheets(parent_folder):
             data(folder_path)
             zen(folder_path)
             shapes(folder_path)
+            quotes(folder_path)
 
             folders_to_delete = ["__MACOSX", "__pycache__"]
             for folder_name in folders_to_delete:
@@ -143,7 +144,7 @@ def sheet_mover(
     statement, points_log_path, script_path,
     folder_path, name, ex, task, points
 ):
-    if statement:
+    if statement and os.path.exists(script_path):
         with open(points_log_path, 'r') as points_log_file:
             existing_content = points_log_file.read()
         previous_balance = int(
@@ -543,6 +544,41 @@ def shapes(folder_path):
 
     sheet_mover(statement, points_log_path, shapes_script_path,
                 folder_path, "shapes.py", "04", "04", 6
+                )
+
+
+def quotes(folder_path):
+    quote_list = [
+        "The person, be it gentleman or lady,"
+        " who has not pleasure in a good novel, must be intolerably stupid.",
+        "Jane Austen",
+        "If you can make a woman laugh, you can make her do anything.",
+        "Marilyn Monroe",
+        "Never tell the truth to people who are not worthy of it.",
+        "Mark Twain",
+        "Author:",
+        "Quote:"
+    ]
+
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+    quotes_script_path = os.path.join(folder_path, 'quotes.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+    passed = True
+
+    if os.path.exists(quotes_script_path):
+        try:
+            result = subprocess.check_output(
+                ['python', quotes_script_path], text=True, encoding='utf-8'
+            )
+            for string in quote_list:
+                if string not in result:
+                    passed = False
+        except subprocess.CalledProcessError:
+            passed = False
+
+    sheet_mover(passed, points_log_path, quotes_script_path,
+                folder_path, "quotes.py", "05", "01", 8
                 )
 
 
