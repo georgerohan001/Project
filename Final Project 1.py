@@ -121,9 +121,15 @@ def extract_sheets(parent_folder):
             books(folder_path)
             anagrams(folder_path)
             data(folder_path)
+            graph(folder_path)
             zen(folder_path)
             shapes(folder_path)
+            zen_word_frequency(folder_path)
             quotes(folder_path)
+            names(folder_path)
+            tictactoe(folder_path)
+            README(folder_path)
+            project(folder_path)
 
             folders_to_delete = ["__MACOSX", "__pycache__"]
             for folder_name in folders_to_delete:
@@ -133,6 +139,24 @@ def extract_sheets(parent_folder):
                     and os.path.isdir(folder_to_delete_path)
                 ):
                     shutil.rmtree(folder_to_delete_path)
+
+    unrecognized_sheets = os.path.join(folder_path, "Unrecognized Sheets")
+    os.makedirs(unrecognized_sheets, exist_ok=True)
+
+    for remaining_item in os.listdir(folder_path):
+        remaining_item_path = os.path.join(folder_path, remaining_item)
+
+        # Check if the item is not one of the designated folders or files
+        if (
+            remaining_item not in ["Already Extracted Sheets",
+                                   "Manual Correction Needed",
+                                   "Successful Sheets", "TXT Files",
+                                   "Unrecognized Sheets", "Points_Log.txt"]
+            and not os.path.isdir(remaining_item_path)
+        ):
+            # Move the item to the "Unrecognized Sheets" folder
+            new_path = os.path.join(unrecognized_sheets, remaining_item)
+            os.rename(remaining_item_path, new_path)
 
 
 def select_parent_folder():
@@ -159,8 +183,9 @@ def sheet_mover(
             points_log.write(
                 f"Sheet {ex} Task {task} {name}: +{points} Points\n"
                 )
-        os.rename(script_path, os.path.join(
-            folder_path, "Successful Sheets", name))
+        if name != "data.csv":
+            os.rename(script_path, os.path.join(
+                folder_path, "Successful Sheets", name))
     elif os.path.exists(script_path):
         os.rename(script_path, os.path.join(
             folder_path, "Manual Correction Needed", name))
@@ -309,6 +334,17 @@ def caesar_cipher(folder_path):
     sheet_mover(statement, points_log_path, caesar_cipher_script_path,
                 folder_path, "caesar_cipher.py", "02", "04", 9
                 )
+
+
+def project(folder_path):
+    project_zip_path = os.path.join(
+        folder_path, 'project.zip')
+
+    if os.path.exists(project_zip_path):
+        os.rename(project_zip_path, os.path.join(
+                folder_path,
+                "Manual Correction Needed",
+                'project.zip'))
 
 
 def books(folder_path):
@@ -484,6 +520,18 @@ def data(folder_path):
                 )
 
 
+def graph(folder_path):
+    graph_script_path = os.path.join(folder_path, 'graph.py')
+    data_csv_path = os.path.join(folder_path, 'data.csv')
+
+    if os.path.exists(graph_script_path):
+        os.rename(graph_script_path, os.path.join(
+                folder_path, "Manual Correction Needed", 'graph.py'))
+    if os.path.exists(data_csv_path):
+        os.rename(data_csv_path, os.path.join(
+                folder_path, "Manual Correction Needed", 'data.csv'))
+
+
 def zen(folder_path):
     zen_script_path = os.path.join(folder_path, 'zen.py')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
@@ -547,6 +595,17 @@ def shapes(folder_path):
                 )
 
 
+def zen_word_frequency(folder_path):
+    zen_word_frequency_script_path = os.path.join(
+        folder_path, 'zen_word_frequency.py')
+
+    if os.path.exists(zen_word_frequency_script_path):
+        os.rename(zen_word_frequency_script_path, os.path.join(
+                folder_path,
+                "Manual Correction Needed",
+                'zen_word_frequency.py'))
+
+
 def quotes(folder_path):
     quote_list = [
         "The person, be it gentleman or lady,"
@@ -580,6 +639,68 @@ def quotes(folder_path):
     sheet_mover(passed, points_log_path, quotes_script_path,
                 folder_path, "quotes.py", "05", "01", 8
                 )
+
+
+def names(folder_path):
+    names_script_path = os.path.join(folder_path, 'names.py')
+    points_log_path = os.path.join(folder_path, "Points_Log.txt")
+
+    if os.path.exists(names_script_path):
+        try:
+            names_module = (
+                SourceFileLoader('names', names_script_path).load_module())
+            from names import alphabetize_names
+        except ImportError:
+            pass
+
+    if os.path.exists(names_script_path) and names_module:
+        with open(names_script_path, 'r') as file:
+            script_content = file.read()
+
+            tree = ast.parse(script_content)
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if (
+                            isinstance(target, ast.Name) and
+                            target.id == 'people'
+                        ):
+                            people = ast.literal_eval(node.value)
+
+        statement = (
+            sorted(people, key=alphabetize_names) ==
+            sorted(
+                people,
+                key=lambda person: (person['last'], person['first']
+                                    )))
+    else:
+        statement = False
+
+    sheet_mover(statement, points_log_path, names_script_path,
+                folder_path, "names.py", "05", "02", 4
+                )
+
+
+def tictactoe(folder_path):
+    tictactoe_script_path = os.path.join(
+        folder_path, 'tictactoe.py')
+
+    if os.path.exists(tictactoe_script_path):
+        os.rename(tictactoe_script_path, os.path.join(
+                folder_path,
+                "Manual Correction Needed",
+                'tictactoe.py'))
+
+
+def README(folder_path):
+    README_script_path = os.path.join(
+        folder_path, 'README.md')
+
+    if os.path.exists(README_script_path):
+        os.rename(README_script_path, os.path.join(
+                folder_path,
+                "Manual Correction Needed",
+                'README.md'))
 
 
 def main():
