@@ -14,28 +14,23 @@ def extract_sheets(parent_folder):
         folder_path = os.path.join(parent_folder, folder_name)
 
         if os.path.isdir(folder_path):
-            alr_ext = "Already Extracted Sheets"
-            txt_files = "TXT Files"
-            success_folder = "Successful Sheets"
-            manual_folder = "Manual Correction Needed"
-            unrecognized = "Unrecognized Sheets"
+            # Creates required folders
+            for folder in [
+                "Already Extracted Sheets",
+                "Manual Correction Needed",
+                "Successful Sheets",
+                "TXT Files",
+                "Unrecognized Sheets"
+            ]:
+                temp_folder = os.path.join(
+                    folder_path,
+                    folder)
+                os.makedirs(temp_folder, exist_ok=True)
 
-            already_extracted_folder = os.path.join(folder_path, alr_ext)
-            os.makedirs(already_extracted_folder, exist_ok=True)
-
-            txt_files_folder = os.path.join(folder_path, txt_files)
-            os.makedirs(txt_files_folder, exist_ok=True)
-
-            successful_sheets = os.path.join(folder_path, success_folder)
-            os.makedirs(successful_sheets, exist_ok=True)
-
-            manual_sheets = os.path.join(folder_path, manual_folder)
-            os.makedirs(manual_sheets, exist_ok=True)
-
-            unrecognized_sheets = os.path.join(folder_path, unrecognized)
-            os.makedirs(unrecognized_sheets, exist_ok=True)
-
+            # Creates points log
             points_log_path = os.path.join(folder_path, "Points_Log.txt")
+
+            # Adds points for Sheet 01 Task 01
             if not os.path.exists(points_log_path):
                 with open(points_log_path, 'w') as points_log:
                     point_balance = 5
@@ -45,6 +40,7 @@ def extract_sheets(parent_folder):
                     points_log.write("\nLogs:\n")
                     points_log.write(ex01_log)
 
+            # Extracts all 5 exercise sheets
             sheet_names = ["sheet01.zip",
                            "sheet02.zip",
                            "sheet03.zip",
@@ -54,9 +50,13 @@ def extract_sheets(parent_folder):
             for sheet_name in sheet_names:
                 sheet_zip_path = os.path.join(folder_path, sheet_name)
 
+                # Warning message if it's already been extracted
                 if os.path.exists(sheet_zip_path):
                     if os.path.exists(
-                        os.path.join(already_extracted_folder, sheet_name)
+                        os.path.join(
+                            folder_path,
+                            "Already Extracted Sheets",
+                            sheet_name)
                     ):
                         message = (
                             f"{sheet_name} has already been extracted for"
@@ -65,6 +65,7 @@ def extract_sheets(parent_folder):
                         )
                         messagebox.showinfo("Sheet Already Extracted", message)
 
+                        # Adds "not extracted" suffix
                         zip_files = sheet_name.replace(
                             '.zip', ' (Not extracted).zip')
 
@@ -78,7 +79,7 @@ def extract_sheets(parent_folder):
                     with zipfile.ZipFile(sheet_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(folder_path)
 
-                    # Move elements out of additional folder, if present
+                    # Check's for folder inside zipfolder with same name
                     additional_folder = sheet_name.replace('.zip', '')
                     additional_folder_path = os.path.join(folder_path,
                                                           additional_folder)
@@ -89,28 +90,35 @@ def extract_sheets(parent_folder):
                             item_path = os.path.join(additional_folder_path,
                                                      item)
                             new_item_path = os.path.join(folder_path, item)
+                            # pastes content directly into folder
                             os.rename(item_path, new_item_path)
 
                         # Remove the now empty additional folder
                         os.rmdir(additional_folder_path)
 
                     already_extracted_path = os.path.join(
-                        already_extracted_folder, sheet_name)
+                        folder_path,
+                        "Already Extracted Sheets",
+                        sheet_name)
                     os.rename(sheet_zip_path, already_extracted_path)
 
                     for extracted_file in os.listdir(folder_path):
                         extracted_file_path = os.path.join(
                             folder_path, extracted_file)
 
+                        # Looks for TXT files
                         if extracted_file.lower().endswith(
                                 '.txt') and extracted_file != "Points_Log.txt":
                             new_txt_path = os.path.join(
-                                txt_files_folder,
+                                folder_path,
+                                "TXT Files",
                                 f"{sheet_name.replace('.zip', '')}"
-                                f"_{extracted_file}")
+                                f"_{extracted_file}")  # Adds filename suffix
 
+                            # Puts them into the TXT files folder
                             os.rename(extracted_file_path, new_txt_path)
 
+            # Exercise sheet correction functions
             helloworld(folder_path)
             username(folder_path)
             crosssum(folder_path)
@@ -125,12 +133,13 @@ def extract_sheets(parent_folder):
             zen(folder_path)
             shapes(folder_path)
             zen_word_frequency(folder_path)
-            quotes(folder_path)
+            quotes(folder_path)  # Remove if needed
             names(folder_path)
             tictactoe(folder_path)
             README(folder_path)
             project(folder_path)
 
+            # Removes commonly found folders
             folders_to_delete = ["__MACOSX", "__pycache__"]
             for folder_name in folders_to_delete:
                 folder_to_delete_path = os.path.join(folder_path, folder_name)
@@ -140,13 +149,10 @@ def extract_sheets(parent_folder):
                 ):
                     shutil.rmtree(folder_to_delete_path)
 
-    unrecognized_sheets = os.path.join(folder_path, "Unrecognized Sheets")
-    os.makedirs(unrecognized_sheets, exist_ok=True)
-
+    # Checks for files with wrong names
     for remaining_item in os.listdir(folder_path):
         remaining_item_path = os.path.join(folder_path, remaining_item)
 
-        # Check if the item is not one of the designated folders or files
         if (
             remaining_item not in ["Already Extracted Sheets",
                                    "Manual Correction Needed",
@@ -155,7 +161,10 @@ def extract_sheets(parent_folder):
             and not os.path.isdir(remaining_item_path)
         ):
             # Move the item to the "Unrecognized Sheets" folder
-            new_path = os.path.join(unrecognized_sheets, remaining_item)
+            new_path = os.path.join(
+                folder_path,
+                "Unrecognized Sheets",
+                remaining_item)
             os.rename(remaining_item_path, new_path)
 
 
@@ -164,6 +173,8 @@ def select_parent_folder():
     return parent_folder
 
 
+# Puts the sheet in successful or unsuccessful sheets folder,
+# depending on whether "statement" is true
 def sheet_mover(
     statement, points_log_path, script_path,
     folder_path, name, ex, task, points
@@ -196,12 +207,14 @@ def helloworld(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
     count_plus_equals = 0
 
+    # Counts how many +/= signs are in print statements
     if os.path.exists(helloworld_script_path):
         with open(helloworld_script_path, 'r') as file:
             for line in file:
                 if line.count('print') > 0:
                     count_plus_equals += line.count("+") + line.count("=")
 
+        # Runs the python file and checks for the expected output
         result = subprocess.check_output(
             ['python', helloworld_script_path], universal_newlines=True
         )
@@ -226,6 +239,7 @@ def username(folder_path):
             ['python', username_script_path],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
 
+        # Collects output with input "Barthelomew"
         output, _ = process.communicate(input='Barthelomew')
 
         statement = ('11' in output)
@@ -246,6 +260,7 @@ def crosssum(folder_path):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, text=True)
 
+        # Collects output with input "99"
         output, _ = process.communicate(input='99')
 
         statement = ('18' in output)
