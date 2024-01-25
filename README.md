@@ -33,3 +33,42 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 ```
 
 The folders folder1, folder2 and folder3 should ideally be named in a way that it represents a student. This means that through reading the name, it should be identiable who the student is. Additionally, the number of exercise sheets in the folders does not matter. The code is designed to skip the correction of exercises that don't exist.
+
+* The code has been tested on several examples, but if the case does occur that the code throws an error on your PC, please attempt it on the sample directory **{name of directory}** provided in the submission.
+
+## Requirements
+
+Althought there is a `requirements.txt` available for this project, only the python version *(v3.12.1)* is present inside. This is because all libraries used are a part of python's standard libraries. This means that as long as you have the same python version, you should have the same version for all libraries. One exception that may be worth checking is the tkinter library, but if you type in the installation command, then the latest version should be the same. To install pip, one can run:
+
+```bash
+pip install tk
+```
+To check to see if your python version is correct, run the command:
+
+```bash
+python --version
+```
+If the result was something other than `3.12.1`, then you might consider running the code anyway, and if it does not work, then you might consider down/updating your python to the 3.12.1 version.
+
+## Usage
+
+To use this python file, please run it in your preffered way, after making sure you have directories available like in the example present in the [Disclaimer](#disclaimers) section. To run it with the console, just run:
+
+```bash
+python -u {filepath}
+```
+Be sure to replace the {filepath} placeholder with the real file path. If you are already in the correct directory in your terminal (using the `cd` command), then the {filename} would just suffice, with the .py suffix.
+
+Upon running, be sure to click on the main mother folder directory, and click on "Select Parent Folder", once that has been done, please wait. You will know the code is done when you see that the terminal once again becomes available for commands. Early exits can be done with **Ctrl + C**, but it is recommended to wait until it is ready.
+
+After the running is finished, you may navigate into the parent directory and open the child folders, you should see no zip files there anymore, and instead:
+
+* A **Points log** which tells you how many points the grader was able to successfully validate. This would mean that the remaining sheets are available in the "Manual Correction Needed" folder for further checking.
+
+* A **"Successful Sheets"** folder, which contains the .py pages for all sheets that passed the test conditions of the grader.
+
+* An **"Manual Correction Needed"** folder, containing the .py files which either did not pass, or was automatically placed there as automatic correction was not possible / would not make sense.
+
+* An **"Already Extracted Sheets"** folder which contains all the zip files for future use, if necessary.
+
+* An **"Unrecognized Sheets"** folder, containing files with names that the project code could not recognize. This can include typos, cache files, accidentally added files and further.
