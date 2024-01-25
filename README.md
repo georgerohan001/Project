@@ -10,3 +10,26 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 - [Contributing](#contributing)
 - [License](#license)
 
+## Disclaimer
+
+* The function **quotes()** makes the running of the file much slower because the quotes exercise requires the fetching of data from 10 pages of a website. If you want faster processing time, consider commenting out the section in **extract_sheets()** where it is called (line 136). PLEASE DO NOT DELETE OR TAMPER WITH THE FUNCTION!!!
+
+* An internet connection is required on the PC in which you run the exercise sheets program due to the quotes() function. Again, if internet connection is not available, head to line 136 and comment out the calling of the function.
+
+* This project assumes the ownership of a directory of files in this format:
+
+```lua
+- A Mother folder
+  |-- folder1
+  |   |-- ExerciseSheet.zip
+  |   |-- AnotherExerciseSheet.zip
+  |-- folder2
+  |   |-- ExerciseSheet.zip
+  |   |-- AnotherExerciseSheet.zip
+  |   |-- AThirdExerciseSheet.zip
+  |-- folder3
+  |   |-- ExerciseSheet.zip
+
+```
+
+The folders folder1, folder2 and folder3 should ideally be named in a way that it represents a student. This means that through reading the name, it should be identiable who the student is. Additionally, the number of exercise sheets in the folders does not matter. The code is designed to skip the correction of exercises that don't exist.
