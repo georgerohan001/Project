@@ -10,7 +10,7 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 - [Contributing](#contributing)
 - [License](#license)
 
-## Disclaimer
+## Disclaimers
 
 * The function **quotes()** makes the running of the file much slower because the quotes exercise requires the fetching of data from 10 pages of a website. If you want faster processing time, consider commenting out the section in **extract_sheets()** where it is called (line 136). PLEASE DO NOT DELETE OR TAMPER WITH THE FUNCTION!!!
 
