@@ -33,7 +33,7 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 
 ```
 
-The folders folder1, folder2 and folder3 should ideally be named in a way that it represents a student. This means that through reading the name, it should be identiable who the student is. Additionally, the number of exercise sheets in the folders does not matter. The code is designed to skip the correction of exercises that don't exist.
+The folders `folder1`, `folder2` and `folder3` should ideally be named in a way that it represents a student. This means that through reading the name, it should be identiable who the student is. Additionally, the number of exercise sheets in the folders does not matter. The code is designed to skip the correction of exercises that don't exist.
 
 * The code has been tested on several examples, but if the case does occur that the code throws an error on your PC, please attempt it on the sample directory **{name of directory}** provided in the submission.
 
