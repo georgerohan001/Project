@@ -37,6 +37,13 @@ The folders `folder1`, `folder2` and `folder3` should ideally be named in a way 
 
 * The code has been tested on several examples, but if the case does occur that the code throws an error on your PC, please attempt it on the sample directory **{name of directory}** provided in the submission.
 
+## Included files
+
+[Project File]("Final Project 1.py"): This is the main project file. This is what you will run 
+[README File](README.md): This is this file. The one that gives you context or important information
+[Sample Directory]("Test Parent Folder - Backup.zip"): This is the folder which you can use to test the code if you don't want to test on your own samples
+[Requirements file](requirements.txt): This is the file that has only the pytho version inside. This is just to ensure that the librariy versions would be the same.
+
 ## Requirements
 
 Althought there is a `requirements.txt` available for this project, only the python version *(v3.12.1)* is present inside. This is because all libraries used are a part of python's standard libraries. This means that as long as you have the same python version, you should have the same version for all libraries. One exception that may be worth checking is the tkinter library, but if you type in the installation command, then the latest version should be the same. To install pip, one can run:
