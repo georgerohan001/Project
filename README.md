@@ -20,16 +20,16 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 * This project assumes the ownership of a directory of files in this format:
 
 ```lua
-- A Mother folder
-  |-- folder1
-  |   |-- ExerciseSheet.zip
-  |   |-- AnotherExerciseSheet.zip
-  |-- folder2
-  |   |-- ExerciseSheet.zip
-  |   |-- AnotherExerciseSheet.zip
-  |   |-- AThirdExerciseSheet.zip
-  |-- folder3
-  |   |-- ExerciseSheet.zip
+├── A Mother folder
+|   ├── folder1
+|   |   ├── ExerciseSheet.zip
+|   |   ├── AnotherExerciseSheet.zip
+|   ├── folder2
+|   |   ├── ExerciseSheet.zip
+|   |   ├── AnotherExerciseSheet.zip
+|   |   ├── AThirdExerciseSheet.zip
+|   ├── folder3
+|   |   ├── ExerciseSheet.zip
 
 ```
 
