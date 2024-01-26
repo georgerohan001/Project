@@ -53,6 +53,8 @@ If the result was something other than `3.12.1`, then you might consider running
 
 ## Usage
 
+IMPORTANT! Please make a backup of the folders that you run the code on. The code is designed to make a backup on its own, but having an extra safeguard shouldn't hurt.
+
 To use this python file, please run it in your preffered way, after making sure you have directories available like in the example present in the [Disclaimer](#disclaimers) section. To run it with the console, just run:
 
 ```bash
