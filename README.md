@@ -6,9 +6,10 @@ Welcome! You are in the README file of the exercise sheet corrector project! If 
 ## Table of Contents
 - [Disclaimers](#Disclaimers)
 - [Requirements](#Requirements)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Usage](#Usage)
+- [Contributing](#Contributing)
+- [Authors](#Authors)
+
 
 ## Disclaimers
 
@@ -72,3 +73,25 @@ After the running is finished, you may navigate into the parent directory and op
 * An **"Already Extracted Sheets"** folder which contains all the zip files for future use, if necessary.
 
 * An **"Unrecognized Sheets"** folder, containing files with names that the project code could not recognize. This can include typos, cache files, accidentally added files and further.
+
+## Contributing
+
+Although this is a one time submission, many man-hours have been spent on this project, which means that we are dedicated to having the code run optimally and correctly. For this reason, it would be great if we recieved any feedback on the code or suggestions on how to run it more effectively. Our communication channels are mainly:
+
+### 1. **Github**:
+We will try to make our Github space more friendly for feedback, reports on bugs and so on.
+### 2. **Email**:
+Assuming this is being read by a course professor, it is assumed that you have the emails of the group members, feel free to reach out in case of any questions/problems
+### 3. **ILIAS**:
+Once again, assuming that this is being seen by the course professors, then ILIAS is also a method of communication.
+
+## Authors
+
+Let's have some appreciation for those involved in the project!
+The collaborators are:
+
+*Husam Al Ahmadieh*
+
+*Fe Bossert*
+
+*George Rohan Pottamkulam*
