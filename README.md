@@ -49,7 +49,7 @@ To check to see if your python version is correct, run the command:
 ```bash
 python --version
 ```
-If the result was something other than `3.12.1`, then you might consider running the code anyway, and if it does not work, then you might consider down/updating your python to the 3.12.1 version.
+If the result was something other than `3.12.1`, then you might consider running the code anyway, and if it does not work, then you might consider down/updating your python to the `3.12.1` version.
 
 ## Usage
 
