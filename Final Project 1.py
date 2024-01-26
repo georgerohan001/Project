@@ -377,6 +377,7 @@ def caesar_cipher(folder_path):
                 )
 
 
+# Moves zip file directly into manual correction folder without attempt.
 def project(folder_path):
     project_zip_path = os.path.join(
         folder_path, 'project.zip')
@@ -405,6 +406,7 @@ def books(folder_path):
 
         variable_classes = {}
 
+        # Opens file and reads for all variables.
         with open(books_script_path, 'r') as file:
             tree = ast.parse(file.read(), filename=books_script_path)
 
@@ -445,6 +447,7 @@ def books(folder_path):
 
         book_class = getattr(books_module, 'Book', None)
 
+        # Checks for the correct attributes
         if book_class:
             signature = inspect.signature(book_class.__init__)
 
@@ -475,6 +478,7 @@ def books(folder_path):
         for variable in variable_classes:
             exec(f"{variable} = {variable_classes[variable]}")
 
+        # Imports and tests the functions
         actual_sum = 0
         parameter_list = []
         for name in variable_function_names:
@@ -548,6 +552,7 @@ def anagrams(folder_path):
             isinstance(node, ast.Dict) for node in ast.walk(parsed_code)
             )
 
+        # Makes sure that the student used a dict.
         if dict_count >= 1:
             pass
         else:
@@ -588,6 +593,7 @@ def zen(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
     zen_imported = False
 
+    # Opens and scans file for "import this"
     if os.path.exists(zen_script_path):
         with open(zen_script_path, 'r') as file:
             for line in file:
