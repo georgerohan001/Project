@@ -215,9 +215,16 @@ def helloworld(folder_path):
                     count_plus_equals += line.count("+") + line.count("=")
 
         # Runs the python file and checks for the expected output
-        result = subprocess.check_output(
-            ['python', helloworld_script_path], universal_newlines=True
-        )
+        try:
+            result = subprocess.check_output(
+                ['python', helloworld_script_path],
+                universal_newlines=True)
+        except FileNotFoundError:
+            # If 'python' is not found, try with 'python3'
+            result = subprocess.check_output(
+                ['python3', helloworld_script_path],
+                universal_newlines=True)
+
         expected_output = f"{25*'='}\n\nH+e+l+l+o W+o+r+l+d !!!\n\n{25*'='}"
         statement = (
             (result.strip() == expected_output.strip())
@@ -235,9 +242,18 @@ def username(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(username_script_path):
-        process = subprocess.Popen(
-            ['python', username_script_path],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        try:
+            process = subprocess.Popen(
+                ['python', username_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
+        except FileNotFoundError:
+            process = subprocess.Popen(
+                ['python3', username_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
 
         # Collects output with input "Barthelomew"
         output, _ = process.communicate(input='Barthelomew')
@@ -255,10 +271,18 @@ def crosssum(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(crosssum_script_path):
-        process = subprocess.Popen(
-            ['python', crosssum_script_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE, text=True)
+        try:
+            process = subprocess.Popen(
+                ['python', crosssum_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
+        except FileNotFoundError:
+            process = subprocess.Popen(
+                ['python3', crosssum_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
 
         # Collects output with input "99"
         output, _ = process.communicate(input='99')
@@ -277,10 +301,18 @@ def lifeinweeks(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(lifeinweeks_script_path):
-        process = subprocess.Popen(
-            ['python', lifeinweeks_script_path],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            text=True)
+        try:
+            process = subprocess.Popen(
+                ['python', lifeinweeks_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
+        except FileNotFoundError:
+            process = subprocess.Popen(
+                ['python3', lifeinweeks_script_path],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True)
 
         output, _ = process.communicate(input='56')
 
@@ -304,11 +336,18 @@ def leapyear(folder_path):
 
     if os.path.exists(leapyear_script_path):
         for test_case in test_cases:
-            process = subprocess.Popen(
-                ['python', leapyear_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+            try:
+                process = subprocess.Popen(
+                    ['python', leapyear_script_path],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    text=True)
+            except FileNotFoundError:
+                process = subprocess.Popen(
+                    ['python3', leapyear_script_path],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    text=True)
 
             output, _ = process.communicate(input=str(test_case))
 
@@ -341,8 +380,14 @@ def million(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(million_script_path):
-        result = subprocess.check_output(
-            ['python', million_script_path], universal_newlines=True)
+        try:
+            result = subprocess.check_output(
+                ['python', million_script_path],
+                universal_newlines=True)
+        except FileNotFoundError:
+            result = subprocess.check_output(
+                ['python3', million_script_path],
+                universal_newlines=True)
 
         statement = (
             "1" in result
@@ -361,12 +406,20 @@ def caesar_cipher(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(caesar_cipher_script_path):
-        result1 = subprocess.run(
-            ["python", caesar_cipher_script_path],
-            input="5\nZyzY", text=True, capture_output=True)
-        result2 = subprocess.run(
-            ["python", caesar_cipher_script_path],
-            input="ZyzY\n5", text=True, capture_output=True)
+        try:
+            result1 = subprocess.run(
+                ["python", caesar_cipher_script_path],
+                input="5\nZyzY", text=True, capture_output=True)
+            result2 = subprocess.run(
+                ["python", caesar_cipher_script_path],
+                input="ZyzY\n5", text=True, capture_output=True)
+        except FileNotFoundError:
+            result1 = subprocess.run(
+                ["python3", caesar_cipher_script_path],
+                input="5\nZyzY", text=True, capture_output=True)
+            result2 = subprocess.run(
+                ["python3", caesar_cipher_script_path],
+                input="ZyzY\n5", text=True, capture_output=True)
 
         statement = (("EdeD" in result1.stdout) or ("EdeD" in result2.stdout))
     else:
@@ -524,12 +577,20 @@ def anagrams(folder_path):
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
 
     if os.path.exists(anagrams_script_path):
-        result = subprocess.run(
-            ["python", anagrams_script_path],
-            capture_output=True, text=True,
-            input="conversationalist\nconversationalist\n",
-            check=True
-            )
+        try:
+            result = subprocess.run(
+                ["python", anagrams_script_path],
+                capture_output=True, text=True,
+                input="conversationalist\nconversationalist\n",
+                check=True
+                )
+        except FileNotFoundError:
+            result = subprocess.run(
+                ["python3", anagrams_script_path],
+                capture_output=True, text=True,
+                input="conversationalist\nconversationalist\n",
+                check=True
+                )
 
         conditions_met = True
 
@@ -688,6 +749,13 @@ def quotes(folder_path):
         try:
             result = subprocess.check_output(
                 ['python', quotes_script_path], text=True, encoding='utf-8'
+            )
+            for string in quote_list:
+                if string not in result:
+                    passed = False
+        except FileNotFoundError:
+            result = subprocess.check_output(
+                ['python3', quotes_script_path], text=True, encoding='utf-8'
             )
             for string in quote_list:
                 if string not in result:
