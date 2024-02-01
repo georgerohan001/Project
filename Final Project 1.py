@@ -529,27 +529,36 @@ def books(folder_path):
             exercise_sheet_passed = False
 
         for variable in variable_classes:
-            exec(f"{variable} = {variable_classes[variable]}")
+            try:
+                exec(f"{variable} = {variable_classes[variable]}")
+            except NameError:
+                pass
 
         # Imports and tests the functions
         actual_sum = 0
         parameter_list = []
-        for name in variable_function_names:
-            var = locals()[f"{name}"]
-            if not (variable_function_names[name]):
-                pass
-            elif (
-                (variable_function_names[name].lower() == "book")
-                and (("Title" and "Author" and "Price") in var.view())
-            ):
-                pass
-            elif (
-                (variable_function_names[name].lower() == "childrenbook")
-                and ("children's book" in var.view())
-            ):
-                pass
-            else:
-                exercise_sheet_passed = False
+
+        try:
+            for name in variable_function_names:
+                var = locals()[f"{name}"]
+                if var:
+                    pass
+                elif not (variable_function_names[name]):
+                    pass
+                elif (
+                    (variable_function_names[name].lower() == "book")
+                    and (("Title" and "Author" and "Price") in var.view())
+                ):
+                    pass
+                elif (
+                    (variable_function_names[name].lower() == "childrenbook")
+                    and ("children's book" in var.view())
+                ):
+                    pass
+                else:
+                    exercise_sheet_passed = False
+        except KeyError:
+            exercise_sheet_passed = False
 
             if (
                 variable_function_names[name]
