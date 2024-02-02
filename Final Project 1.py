@@ -1,4 +1,5 @@
 import tkinter as tk
+import sys
 from tkinter import filedialog, messagebox
 import zipfile
 import os
@@ -541,20 +542,24 @@ def books(folder_path):
         try:
             for name in variable_function_names:
                 var = locals()[f"{name}"]
-                if var:
-                    pass
-                elif not (variable_function_names[name]):
-                    pass
-                elif (
-                    (variable_function_names[name].lower() == "book")
-                    and (("Title" and "Author" and "Price") in var.view())
-                ):
-                    pass
-                elif (
-                    (variable_function_names[name].lower() == "childrenbook")
-                    and ("children's book" in var.view())
-                ):
-                    pass
+                sys.stdout = open('nul', 'w')
+                if exercise_sheet_passed:
+                    if not (variable_function_names[name]):
+                        pass
+                    elif (
+                        (variable_function_names[name].lower() == "book")
+                        and var.view()
+                        and (("Title" and "Author" and "Price") in var.view())
+                    ):
+                        pass
+                    elif (
+                        (variable_function_names[name].lower(
+                            ) == "childrenbook")
+                        and ("children's book" in var.view())
+                    ):
+                        pass
+                    else:
+                        exercise_sheet_passed = False
                 else:
                     exercise_sheet_passed = False
         except KeyError:
@@ -567,9 +572,9 @@ def books(folder_path):
                 actual_sum += var.price
                 parameter_list.append(name)
 
-        if actual_sum == buy_books(
+        if exercise_sheet_passed and (actual_sum == buy_books(
             *[locals()[param] for param in parameter_list]
-        ):
+        )):
             pass
         else:
             exercise_sheet_passed = False
