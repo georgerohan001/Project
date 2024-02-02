@@ -380,19 +380,20 @@ def leapyear(folder_path):
                     text=True)
 
             output, _ = process.communicate(input=str(test_case))
+            output = output.lower()
 
             if (
                 (
                     (test_case == 2000)
-                    and ('Leap year' in output)
-                    and ('Not' not in output))
+                    and ('leap year' in output)
+                    and ('not' not in output))
                     or (((test_case == 2004)
-                        and ('Leap year' in output)
-                        and ('Not' not in output)))
+                        and ('leap year' in output)
+                        and ('not' not in output)))
                     or (((test_case == 2100)
-                        and ('Not' in output)))
+                        and ('not' in output)))
                     or (((test_case == 2097)
-                        and ('Not' in output)))
+                        and ('not' in output)))
             ):
                 successful_tests += 1
 
@@ -562,6 +563,8 @@ def books(folder_path):
             try:
                 exec(f"{variable} = {variable_classes[variable]}")
             except NameError:
+                pass
+            except TypeError:
                 pass
 
         # Imports and tests the functions
