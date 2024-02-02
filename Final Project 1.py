@@ -80,22 +80,32 @@ def extract_sheets(parent_folder):
                     with zipfile.ZipFile(sheet_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(folder_path)
 
-                    # Check's for folder inside zipfolder with same name
-                    additional_folder = sheet_name.replace('.zip', '')
-                    additional_folder_path = os.path.join(folder_path,
-                                                          additional_folder)
+                    for item in os.listdir(folder_path):
+                        item_path = os.path.join(folder_path, item)
 
-                    if os.path.exists(additional_folder_path) and (
-                            os.path.isdir(additional_folder_path)):
-                        for item in os.listdir(additional_folder_path):
-                            item_path = os.path.join(additional_folder_path,
-                                                     item)
-                            new_item_path = os.path.join(folder_path, item)
-                            # pastes content directly into folder
-                            os.rename(item_path, new_item_path)
+                        if os.path.isdir(item_path) and item not in [
+                                "__MACOSX", "__pycache__",
+                                "Already Extracted Sheets",
+                                "Manual Correction Needed",
+                                "Successful Sheets", "TXT Files",
+                                "Unrecognized Sheets"]:
 
-                        # Remove the now empty additional folder
-                        os.rmdir(additional_folder_path)
+                            py_file_found = any(
+                                sub_item.endswith(".py") and os.path.isfile(
+                                    os.path.join(item_path, sub_item))
+                                for sub_item in os.listdir(item_path)
+                            )
+
+                            if py_file_found:
+                                for sub_item in os.listdir(item_path):
+                                    sub_item_path = os.path.join(
+                                        item_path, sub_item)
+                                    new_item_path = os.path.join(
+                                        folder_path, sub_item)
+                                    os.rename(sub_item_path, new_item_path)
+
+                                # Remove the now empty additional folder
+                                os.rmdir(item_path)
 
                     already_extracted_path = os.path.join(
                         folder_path,
@@ -154,19 +164,21 @@ def extract_sheets(parent_folder):
     for remaining_item in os.listdir(folder_path):
         remaining_item_path = os.path.join(folder_path, remaining_item)
 
-        if (
-            remaining_item not in ["Already Extracted Sheets",
-                                   "Manual Correction Needed",
-                                   "Successful Sheets", "TXT Files",
-                                   "Unrecognized Sheets", "Points_Log.txt"]
-            and not os.path.isdir(remaining_item_path)
-        ):
+        if remaining_item not in ["Already Extracted Sheets",
+                                  "Manual Correction Needed",
+                                  "Successful Sheets", "TXT Files",
+                                  "Unrecognized Sheets", "Points_Log.txt"]:
             # Move the item to the "Unrecognized Sheets" folder
             new_path = os.path.join(
                 folder_path,
                 "Unrecognized Sheets",
                 remaining_item)
-            os.rename(remaining_item_path, new_path)
+
+            if os.path.isdir(remaining_item_path):
+                shutil.move(remaining_item_path, new_path)
+            else:
+                # If it's a file, use os.rename to move the file
+                os.rename(remaining_item_path, new_path)
 
 
 def select_parent_folder():
@@ -180,27 +192,44 @@ def sheet_mover(
     statement, points_log_path, script_path,
     folder_path, name, ex, task, points
 ):
+    manual_correction_folder = os.path.join(
+        folder_path, "Manual Correction Needed")
+
     if statement and os.path.exists(script_path):
-        with open(points_log_path, 'r') as points_log_file:
-            existing_content = points_log_file.read()
-        previous_balance = int(
-            existing_content.split("Point balance: ")[1].split("\n")[0])
-        updated_point_balance = previous_balance + points
-        updated_content = existing_content.replace(
-            f"Point balance: {previous_balance}",
-            f"Point balance: {updated_point_balance}")
-        with open(points_log_path, 'w') as points_log:
-            points_log.write(updated_content)
-        with open(points_log_path, 'a') as points_log:
-            points_log.write(
-                f"Sheet {ex} Task {task} {name}: +{points} Points\n"
+        # Check if the script file already exists in "Successful Sheets"
+        successful_sheets_folder = os.path.join(
+            folder_path, "Successful Sheets")
+        if os.path.exists(os.path.join(successful_sheets_folder, name)):
+            # If it exists, delete the script file
+            os.remove(script_path)
+        else:
+            with open(points_log_path, 'r') as points_log_file:
+                existing_content = points_log_file.read()
+            previous_balance = int(
+                existing_content.split("Point balance: ")[1].split("\n")[0])
+            updated_point_balance = previous_balance + points
+            updated_content = existing_content.replace(
+                f"Point balance: {previous_balance}",
+                f"Point balance: {updated_point_balance}")
+            with open(points_log_path, 'w') as points_log:
+                points_log.write(updated_content)
+            with open(points_log_path, 'a') as points_log:
+                points_log.write(
+                    f"Sheet {ex} Task {task} {name}: +{points} Points\n"
                 )
-        if name != "data.csv":
-            os.rename(script_path, os.path.join(
-                folder_path, "Successful Sheets", name))
+            if name != "data.csv":
+                os.rename(script_path, os.path.join(
+                    successful_sheets_folder, name))
     elif os.path.exists(script_path):
-        os.rename(script_path, os.path.join(
-            folder_path, "Manual Correction Needed", name))
+        existing_file_path = os.path.join(manual_correction_folder, name)
+        if os.path.exists(existing_file_path):
+            # If it exists, replace the existing file
+            os.replace(script_path, existing_file_path)
+        else:
+            # If it doesn't exist, proceed with moving the file
+            os.rename(
+                script_path,
+                os.path.join(manual_correction_folder, name))
 
 
 def helloworld(folder_path):
@@ -431,16 +460,16 @@ def caesar_cipher(folder_path):
                 )
 
 
-# Moves zip file directly into manual correction folder without attempt.
 def project(folder_path):
-    project_zip_path = os.path.join(
-        folder_path, 'project.zip')
+    project_path = os.path.join(folder_path, 'project')
+    project_zip_path = os.path.join(folder_path, 'project.zip')
 
-    if os.path.exists(project_zip_path):
+    if os.path.exists(project_path):
+        shutil.move(project_path, os.path.join(
+            folder_path, "Manual Correction Needed", 'project'))
+    elif os.path.exists(project_zip_path):
         os.rename(project_zip_path, os.path.join(
-                folder_path,
-                "Manual Correction Needed",
-                'project.zip'))
+            folder_path, "Manual Correction Needed", 'project.zip'))
 
 
 def books(folder_path):
