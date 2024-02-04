@@ -78,7 +78,29 @@ def extract_sheets(parent_folder):
                         continue
 
                     with zipfile.ZipFile(sheet_zip_path, 'r') as zip_ref:
-                        zip_ref.extractall(folder_path)
+                        try:
+                            zip_ref.extractall(folder_path)
+                        except FileNotFoundError:
+                            folder_to_delete = os.path.join(
+                                folder_path,
+                                "%temp%")
+                            os.makedirs(folder_to_delete, exist_ok=True)
+                            zip_ref.extractall(folder_to_delete)
+                            for item in os.listdir(folder_to_delete):
+                                item_path = os.path.join(
+                                    folder_to_delete,
+                                    item)
+                                if (
+                                    os.path.isdir(item_path)
+                                    and item.endswith(".zip")
+                                ):
+                                    os.rename(item_path, os.path.join(
+                                            folder_to_delete,
+                                            item[:-4]))
+                                shutil.move(os.path.join(
+                                    folder_to_delete,
+                                    item[:-4]), folder_path)
+                            os.rmdir(folder_to_delete)
 
                     for item in os.listdir(folder_path):
                         item_path = os.path.join(folder_path, item)
@@ -174,11 +196,7 @@ def extract_sheets(parent_folder):
                 "Unrecognized Sheets",
                 remaining_item)
 
-            if os.path.isdir(remaining_item_path):
-                shutil.move(remaining_item_path, new_path)
-            else:
-                # If it's a file, use os.rename to move the file
-                os.rename(remaining_item_path, new_path)
+            shutil.move(remaining_item_path, new_path)
 
 
 def select_parent_folder():
@@ -385,10 +403,10 @@ def leapyear(folder_path):
             if (
                 (
                     (test_case == 2000)
-                    and ('leap year' in output)
+                    and ('leap year' or 'leapyear' in output)
                     and ('not' not in output))
                     or (((test_case == 2004)
-                        and ('leap year' in output)
+                        and ('leap year' or 'leapyear' in output)
                         and ('not' not in output)))
                     or (((test_case == 2100)
                         and ('not' in output)))
@@ -464,6 +482,7 @@ def caesar_cipher(folder_path):
 def project(folder_path):
     project_path = os.path.join(folder_path, 'project')
     project_zip_path = os.path.join(folder_path, 'project.zip')
+    false_path = os.path.join(folder_path, 'project.zip.zip')
 
     if os.path.exists(project_path):
         shutil.move(project_path, os.path.join(
@@ -471,6 +490,9 @@ def project(folder_path):
     elif os.path.exists(project_zip_path):
         os.rename(project_zip_path, os.path.join(
             folder_path, "Manual Correction Needed", 'project.zip'))
+    elif os.path.exists(false_path):
+        os.rename(false_path, os.path.join(
+            folder_path, "Manual Correction Needed", 'project.zip.zip'))
 
 
 def books(folder_path):
