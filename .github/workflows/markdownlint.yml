@@ -1,0 +1,19 @@
+name: Markdown Linting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Markdown lint
+      uses: caddyorg/markdownlint-action@v0.3.1
+      with:
+        args: .
