@@ -17,11 +17,8 @@ def extract_sheets(parent_folder):
         if os.path.isdir(folder_path):
             # Creates required folders
             for folder in [
-                "Already Extracted Sheets",
-                "Manual Correction Needed",
-                "Successful Sheets",
-                "TXT Files",
-                "Unrecognized Sheets"
+                "Already Extracted Sheets", "Manual Correction Needed",
+                "Successful Sheets", "TXT Files", "Unrecognized Sheets"
             ]:
                 temp_folder = os.path.join(
                     folder_path,
@@ -42,11 +39,8 @@ def extract_sheets(parent_folder):
                     points_log.write(ex01_log)
 
             # Extracts all 5 exercise sheets
-            sheet_names = ["sheet01.zip",
-                           "sheet02.zip",
-                           "sheet03.zip",
-                           "sheet04.zip",
-                           "sheet05.zip"]
+            sheet_names = ["sheet01.zip", "sheet02.zip", "sheet03.zip",
+                           "sheet04.zip", "sheet05.zip"]
 
             for sheet_name in sheet_names:
                 sheet_zip_path = os.path.join(folder_path, sheet_name)
@@ -80,7 +74,7 @@ def extract_sheets(parent_folder):
                     with zipfile.ZipFile(sheet_zip_path, 'r') as zip_ref:
                         try:
                             zip_ref.extractall(folder_path)
-                        except FileNotFoundError:
+                        except (FileNotFoundError, NotADirectoryError):
                             folder_to_delete = os.path.join(
                                 folder_path,
                                 "%temp%")
@@ -143,8 +137,7 @@ def extract_sheets(parent_folder):
                         if extracted_file.lower().endswith(
                                 '.txt') and extracted_file != "Points_Log.txt":
                             new_txt_path = os.path.join(
-                                folder_path,
-                                "TXT Files",
+                                folder_path, "TXT Files",
                                 f"{sheet_name.replace('.zip', '')}"
                                 f"_{extracted_file}")  # Adds filename suffix
 
@@ -192,9 +185,7 @@ def extract_sheets(parent_folder):
                                   "Unrecognized Sheets", "Points_Log.txt"]:
             # Move the item to the "Unrecognized Sheets" folder
             new_path = os.path.join(
-                folder_path,
-                "Unrecognized Sheets",
-                remaining_item)
+                folder_path, "Unrecognized Sheets", remaining_item)
 
             shutil.move(remaining_item_path, new_path)
 
@@ -292,16 +283,12 @@ def username(folder_path):
     if os.path.exists(username_script_path):
         try:
             process = subprocess.Popen(
-                ['python', username_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python', username_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
         except FileNotFoundError:
             process = subprocess.Popen(
-                ['python3', username_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python3', username_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
 
         # Collects output with input "Barthelomew"
         output, _ = process.communicate(input='Barthelomew')
@@ -321,16 +308,12 @@ def crosssum(folder_path):
     if os.path.exists(crosssum_script_path):
         try:
             process = subprocess.Popen(
-                ['python', crosssum_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python', crosssum_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
         except FileNotFoundError:
             process = subprocess.Popen(
-                ['python3', crosssum_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python3', crosssum_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
 
         # Collects output with input "99"
         output, _ = process.communicate(input='99')
@@ -351,22 +334,17 @@ def lifeinweeks(folder_path):
     if os.path.exists(lifeinweeks_script_path):
         try:
             process = subprocess.Popen(
-                ['python', lifeinweeks_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python', lifeinweeks_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
         except FileNotFoundError:
             process = subprocess.Popen(
-                ['python3', lifeinweeks_script_path],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                text=True)
+                ['python3', lifeinweeks_script_path], stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, text=True)
 
         output, _ = process.communicate(input='56')
 
         statement = (
-            '12410 day' in output
-            and '1768 week' in output
+            '12410 day' in output and '1768 week' in output
             and '408 month' in output)
     else:
         statement = False
@@ -386,32 +364,25 @@ def leapyear(folder_path):
         for test_case in test_cases:
             try:
                 process = subprocess.Popen(
-                    ['python', leapyear_script_path],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    text=True)
+                    ['python', leapyear_script_path], stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE, text=True)
             except FileNotFoundError:
                 process = subprocess.Popen(
-                    ['python3', leapyear_script_path],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    text=True)
+                    ['python3', leapyear_script_path], stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE, text=True)
 
             output, _ = process.communicate(input=str(test_case))
             output = output.lower()
 
             if (
-                (
-                    (test_case == 2000)
-                    and ('leap year' or 'leapyear' in output)
-                    and ('not' not in output))
-                    or (((test_case == 2004)
-                        and ('leap year' or 'leapyear' in output)
-                        and ('not' not in output)))
-                    or (((test_case == 2100)
-                        and ('not' in output)))
-                    or (((test_case == 2097)
-                        and ('not' in output)))
+                ((test_case == 2000) and
+                 ('leap year' or 'leapyear' in output) and
+                 ('not' not in output)) or
+                ((test_case == 2004) and
+                 ('leap year' or 'leapyear' in output) and
+                 ('not' not in output)) or
+                ((test_case == 2100) and ('not' in output)) or
+                ((test_case == 2097) and ('not' in output))
             ):
                 successful_tests += 1
 
@@ -431,16 +402,13 @@ def million(folder_path):
     if os.path.exists(million_script_path):
         try:
             result = subprocess.check_output(
-                ['python', million_script_path],
-                universal_newlines=True)
+                ['python', million_script_path], universal_newlines=True)
         except FileNotFoundError:
             result = subprocess.check_output(
-                ['python3', million_script_path],
-                universal_newlines=True)
+                ['python3', million_script_path], universal_newlines=True)
 
         statement = (
-            "1" in result
-            and "1000000" in result
+            "1" in result and "1000000" in result
             and "500000500000" in result)
     else:
         statement = False
@@ -509,9 +477,7 @@ def books(folder_path):
             pass
 
         exercise_sheet_passed = True
-
         variable_classes = {}
-
         # Opens file and reads for all variables.
         with open(books_script_path, 'r') as file:
             tree = ast.parse(file.read(), filename=books_script_path)
@@ -531,7 +497,6 @@ def books(folder_path):
                         variable_classes[variable_name] = value
 
         variable_function_names = {}
-
         for variable_name, value in variable_classes.items():
             if isinstance(value, str) and value.startswith(
                 ("Book(", "ChildrenBook(")
@@ -550,69 +515,50 @@ def books(folder_path):
                 childrenbook_count += 1
 
         book_class = getattr(books_module, 'Book', None)
-
         book_class = getattr(books_module, 'Book', None)
 
         # Checks for the correct attributes
         if book_class:
             signature = inspect.signature(book_class.__init__)
-
             required_attributes = ['title', 'author', 'price']
             present_attributes = all(
                 param in signature.parameters for param in required_attributes)
 
-            if present_attributes:
-                pass
-            else:
+            if not present_attributes:
                 exercise_sheet_passed = False
 
-        if (
-            hasattr(books_module, 'Book')
-            and hasattr(books_module, 'ChildrenBook')
-            and hasattr(Book, 'view')
-            and callable(getattr(Book, 'view'))
-            and hasattr(ChildrenBook, 'view')
+        if not (
+            hasattr(books_module, 'Book') and callable(getattr(Book, 'view'))
+            and hasattr(books_module, 'ChildrenBook') and book_count >= 3
+            and hasattr(ChildrenBook, 'view') and hasattr(Book, 'view')
             and callable(getattr(ChildrenBook, 'view'))
-            and hasattr(books_module, 'buy_books')
-            and book_count >= 3
-            and childrenbook_count >= 2
+            and hasattr(books_module, 'buy_books') and childrenbook_count >= 2
         ):
-            pass
-        else:
             exercise_sheet_passed = False
 
         for variable in variable_classes:
             try:
                 exec(f"{variable} = {variable_classes[variable]}")
-            except NameError:
-                pass
-            except TypeError:
+            except (NameError, TypeError):
                 pass
 
         # Imports and tests the functions
         actual_sum = 0
         parameter_list = []
-
         try:
             for name in variable_function_names:
                 var = locals()[f"{name}"]
                 sys.stdout = open('nul', 'w')
                 if exercise_sheet_passed:
-                    if not (variable_function_names[name]):
-                        pass
-                    elif (
+                    if (variable_function_names[name]) and not (
                         (variable_function_names[name].lower() == "book")
                         and var.view()
                         and (("Title" and "Author" and "Price") in var.view())
+                        ) and not (
+                            (variable_function_names[name].lower(
+                                ) == "childrenbook")
+                            and ("children's book" in var.view())
                     ):
-                        pass
-                    elif (
-                        (variable_function_names[name].lower(
-                            ) == "childrenbook")
-                        and ("children's book" in var.view())
-                    ):
-                        pass
-                    else:
                         exercise_sheet_passed = False
                 else:
                     exercise_sheet_passed = False
@@ -626,11 +572,9 @@ def books(folder_path):
                 actual_sum += var.price
                 parameter_list.append(name)
 
-        if exercise_sheet_passed and (actual_sum == buy_books(
-            *[locals()[param] for param in parameter_list]
+        if not (exercise_sheet_passed and (actual_sum == buy_books(
+            *[locals()[param] for param in parameter_list])
         )):
-            pass
-        else:
             exercise_sheet_passed = False
     else:
         exercise_sheet_passed = False
@@ -649,24 +593,18 @@ def anagrams(folder_path):
             result = subprocess.run(
                 ["python", anagrams_script_path],
                 capture_output=True, text=True,
-                input="conversationalist\nconversationalist\n",
-                check=True
+                input="conversationalist\nconversationalist\n", check=True
                 )
         except FileNotFoundError:
             result = subprocess.run(
                 ["python3", anagrams_script_path],
                 capture_output=True, text=True,
-                input="conversationalist\nconversationalist\n",
-                check=True
+                input="conversationalist\nconversationalist\n", check=True
                 )
 
         conditions_met = True
-
         output = result.stdout.lower()
-
-        if "anagram" in output and " not " not in output:
-            pass
-        else:
+        if not ("anagram" in output and " not " not in output):
             conditions_met = False
 
         with open(anagrams_script_path, 'r') as file:
@@ -682,9 +620,7 @@ def anagrams(folder_path):
             )
 
         # Makes sure that the student used a dict.
-        if dict_count >= 1:
-            pass
-        else:
+        if not (dict_count >= 1):
             conditions_met = False
     else:
         conditions_met = False
@@ -697,7 +633,6 @@ def anagrams(folder_path):
 def data(folder_path):
     data_csv_path = os.path.join(folder_path, 'data.csv')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
-
     statement = (os.path.exists(data_csv_path))
 
     sheet_mover(statement, points_log_path, data_csv_path,
@@ -763,17 +698,13 @@ def shapes(folder_path):
             modules_worked = False
 
         statement = (
-            modules_worked and
-            hasattr(shapes_module, 'Shape') and
-            hasattr(shapes_module, 'Circle') and
-            hasattr(shapes_module, 'Rectangle') and
-            issubclass(Circle, Shape) and
-            issubclass(Rectangle, Shape) and
+            modules_worked and hasattr(shapes_module, 'Rectangle') and
+            hasattr(shapes_module, 'Shape') and issubclass(Circle, Shape) and
+            hasattr(shapes_module, 'Circle') and (int(rct.area()) == 15) and
+            issubclass(Rectangle, Shape) and (int(rct.perimeter()) == 16) and
             (shp.area() and shp.perimeter()) and
             (78 <= float(crcl.area()) <= 79) and
-            (31 <= float(crcl.perimeter()) <= 32) and
-            (int(rct.area()) == 15) and
-            (int(rct.perimeter()) == 16)
+            (31 <= float(crcl.perimeter()) <= 32)
         )
     else:
         statement = False
@@ -789,8 +720,7 @@ def zen_word_frequency(folder_path):
 
     if os.path.exists(zen_word_frequency_script_path):
         os.rename(zen_word_frequency_script_path, os.path.join(
-                folder_path,
-                "Manual Correction Needed",
+                folder_path, "Manual Correction Needed",
                 'zen_word_frequency.py'))
 
 
@@ -798,17 +728,12 @@ def quotes(folder_path):
     quote_list = [
         "The person, be it gentleman or lady,"
         " who has not pleasure in a good novel, must be intolerably stupid.",
-        "Jane Austen",
         "If you can make a woman laugh, you can make her do anything.",
-        "Marilyn Monroe",
         "Never tell the truth to people who are not worthy of it.",
-        "Mark Twain",
-        "Author:",
-        "Quote:"
+        "Jane Austen", "Marilyn Monroe", "Mark Twain", "Author:", "Quote:"
     ]
 
     os.environ['PYTHONIOENCODING'] = 'utf-8'
-
     quotes_script_path = os.path.join(folder_path, 'quotes.py')
     points_log_path = os.path.join(folder_path, "Points_Log.txt")
     passed = True
@@ -851,7 +776,6 @@ def names(folder_path):
     if os.path.exists(names_script_path) and names_module:
         with open(names_script_path, 'r') as file:
             script_content = file.read()
-
             tree = ast.parse(script_content)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
