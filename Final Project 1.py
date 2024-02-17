@@ -1,6 +1,5 @@
-import tkinter as tk
 import sys
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, Tk
 import zipfile
 import os
 import shutil
@@ -823,7 +822,7 @@ def README(folder_path):
 
 
 def main():
-    root = tk.Tk()
+    root = Tk()
     root.withdraw()
 
     parent_folder = select_parent_folder()
