@@ -40,7 +40,7 @@ The folders `folder1`, `folder2`, and `folder3` should ideally be named in a way
 
 ## Included files
 
-* [Project File](/Final%20Project%201.py): This is the main project file. This is what you will run 
+* [Project File](/main.py): This is the main project file. This is what you will run 
 * [README File](README.md): This is this file. The one that gives you context or important information
 * [Sample Directory](/Test%20Parent%20Folder.zip): This is the folder that you can use to test the code if you don't want to test on your own directories.
 * [Requirements file](requirements.txt): This is the file that has only the Python version inside. This is just to ensure that the library versions would be the same.
