@@ -47,7 +47,7 @@ The folders `folder1`, `folder2`, and `folder3` should ideally be named in a way
 
 ## Requirements
 
-Although there is a `requirements.txt` available for this project, only the Python version *(v3.12.1)* is present inside. This is because all libraries used are a part of Python's standard libraries. This means that as long as you have the same Python version, you should have the same version for all libraries. One exception that may be worth checking is the tkinter library, but if you type in the installation command, then the latest version should be the same. To install pip, one can run:
+Although there is a `requirements.txt` available for this project, only the Python version *(v3.12.1)* is present inside. This is because all libraries used are a part of Python's standard libraries. This means that as long as you have the same Python version, you should have the same version for all libraries. One exception that may be worth checking is the tkinter library, but if you type in the installation command, then the latest version should be the same. To install using pip, one can run:
 
 ```bash
 pip install tk
